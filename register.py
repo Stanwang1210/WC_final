@@ -6,7 +6,7 @@ import sys
 from sys import exit
 import glob
 import time
-
+from API import detect
 from Person import Person
 def registered_headers():
     os.system("clear")
@@ -16,31 +16,35 @@ def echo(string, padding=80,  for_input = False):
     padding = " " * (padding - len(string)) if padding else ""
     print(string + padding, end='\r')
 
-def verify_name(name, registered_name):
+def pass_registration(name, registered_name):
+    if name in registered_name:
+        time.sleep(1)
+        registered_headers()
+        print("The name you entered is registered, please enter other name")
+        return False
+    return True
 
-    def pass_registration(name, registered_name):
-        if name in registered_name:
-            time.sleep(1)
-            registered_headers()
-            print("The name you entered is registered, please enter other name")
-            return False
+def re_type(ans):
+
+    if ans.capitalize()[0] == "N":
+        return False
+    elif ans.capitalize()[0] == "Y":
         return True
+    else:
+        return "Redo"
+    
+def verify(name, registered_name):
 
-    def re_type(ans):
-
-        if ans.capitalize()[0] == "N":
-            return False
-        elif ans.capitalize()[0] == "Y":
-            return True
-        else:
-            return "Redo"
-
-    while not pass_registration(name, registered_name):
+    goal = "Age"
+    if registered_name is not None:
+        goal = "User name"
+    while (registered_name is not None) and (not pass_registration(name, registered_name)):
         return False
 
     while True:
+        time.sleep(1)
         registered_headers()
-        ans = re_type(input(f"User name is {name}, do you want to re-type the user name (Yes/No)? ")) 
+        ans = re_type(input(f"{goal} is {name}, do you want to re-type the {goal.lower()} (Yes/No)? ")) 
         if ans == "Redo":
             continue
         elif ans:
@@ -51,8 +55,23 @@ def verify_name(name, registered_name):
             return True
         else:
             print("SHIT, it wents wrong !!")
+def detect_face(img_path):
     
-
+    representation = detect(pic)
+    if 'error' in representation.keys() :
+        if representation['error'] == "Face could not be detected. Please confirm that the picture is a face photo or consider to set enforce_detection param to False.":
+            print("Could not detect face, pls take picture again !")
+            
+        else:
+            print(representation['error'])
+            
+        return False
+    elif 'embedding' in representation.keys():
+        return True
+pic = sys.argv[1]
+# Make sure face is detected by the camera !
+if not detect_face(pic):
+    exit(0)
 register_dir = "Auth"
 register_file = os.path.join(register_dir, "name_list.txt")
 user = Person()
@@ -69,29 +88,11 @@ time.sleep(2.5)
 # Name
 registered_headers()
 name = input("Please type your name here : ")
-while not verify_name(name = name, registered_name=registered_name):
+while not verify(name = name, registered_name=registered_name):
     name = input("Please type your name here : ")
 
-    # ans = input(f"User name is {name}, do you want to re-type the user name (Yes/No)? ")
-    # # print(ans.capitalize()[0])
-
-    # if ans.capitalize()[0] == "N":
-    #     break
-    # elif ans.capitalize()[0] == "Y":
-    #     registered_headers()
-    #     continue
-    # else:
-    #     name = input("Please type your name here : ")
-    #     while name in registered_name:
-    #         time.sleep(1)
-    #         os.system("clear")
-    #         print("******************* Registering ************************")
-    #         print("The name you entered is registered, please enter other name")
-    #         name = input("Please type your name here : ")
-        
 print(f"User name : {name}")
 time.sleep(2.5)
-exit(0)
 # ****************************************************************
 # Age
 def is_int(value):
@@ -104,13 +105,11 @@ def verify_age(age):
 
     while not is_int(age):
         time.sleep(1)
-        os.system("clear")
-        print("******************* Registering ************************")
+        registered_headers()
         print("Your input is not a valid age !")
         age = input("Please type your Age here : ")
     return age
-os.system("clear")
-print("******************* Registering ************************")
+registered_headers()
 age = verify_age(input("Please type your Age here : "))
 verified = False
 while not verified:
@@ -125,17 +124,20 @@ while not verified:
         print("******************* Registering ************************")
         age = verify_age(input("Please type your Age here : "))
         
+registered_headers()
 print(f"User age : {age}")
 time.sleep(2.5)
 
 # ****************************************************************
 # take pictures here
 
-pic = None
 
 user.register(name=name, age=age, pic_path=pic)
+with open(register_file, "a") as f:
+    f.writelines(name)
+    f.writelines("\n")
 
-
+print("Successfully registered !!")
 
 
 
