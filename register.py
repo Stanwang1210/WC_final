@@ -55,6 +55,9 @@ def verify(name, registered_name):
             return True
         else:
             print("SHIT, it wents wrong !!")
+            
+def take_pic(img_path):
+    pass
 def detect_face(img_path):
     
     representation = detect(pic)
@@ -68,10 +71,10 @@ def detect_face(img_path):
         return False
     elif 'embedding' in representation.keys():
         return True
-pic = sys.argv[1]
+pic = take_pic(sys.argv[1])
 # Make sure face is detected by the camera !
-if not detect_face(pic):
-    exit(0)
+while not detect_face(pic):
+    pic = take_pic(sys.argv[1])
 register_dir = "Auth"
 register_file = os.path.join(register_dir, "name_list.txt")
 user = Person()
