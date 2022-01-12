@@ -5,7 +5,7 @@ import requests
 import socket
 # print(socket.gethostbyname(socket.gethostname()))
 def verify(img1 , img2):
-    api = "http://0.0.0.0:5000/verify"
+    api = "http://192.168.55.100:5000/verify"
     # f = open('deepface/api/deepface.postman_collection.json')
     headers = {'Content-type': 'application/json'}
     f = open('data2.json')
@@ -38,7 +38,7 @@ def verify(img1 , img2):
     return response
     
 def detect(img_path):
-    api = "http://0.0.0.0:5000/represent"
+    api = "http://192.168.55.100:5000/represent"
     # f = open('deepface/api/deepface.postman_collection.json')
     headers = {'Content-type': 'application/json'}
     f = open('data2.json')
